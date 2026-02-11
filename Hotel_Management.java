@@ -5,16 +5,19 @@ public class Hotel_Management {
     private static final String url="jdbc:mysql://localhost:3306/hotel_db";
     private static final String username="root";
     private static final String password="Soham@030904";
+
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
         }catch (ClassNotFoundException e){
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
+
 
         try{
             Connection connection= DriverManager.getConnection(url, username, password);
             Statement statement= connection.createStatement();
+
             while (true){
                 System.out.println();
                 System.out.println("HOTEL MANAGEMENT SYSTEM");
@@ -27,6 +30,7 @@ public class Hotel_Management {
                 System.out.println("6. Exit");
                 System.out.println("Choose an option: ");
                 int choice= scanner.nextInt();
+
                 switch (choice){
                     case 1:
                         reserveRoom(connection, scanner, statement);
@@ -50,20 +54,26 @@ public class Hotel_Management {
                     default:
                         System.out.println("Invalid choice...");
                 }
-
             }
+
         }catch (SQLException e){
             System.out.println(e.getMessage());
         }catch (InterruptedException e){
             throw new RuntimeException(e);
         }
     }
+
     private static void reserveRoom(Connection connection, Scanner scanner, Statement statement){
         try{
+            scanner.nextLine(); // clear buffer
+
             System.out.println("Enter guest name: ");
             String guestName=scanner.nextLine();
+
             System.out.println("Enter room number: ");
             int roomNumber= scanner.nextInt();
+            scanner.nextLine();
+
             System.out.println("Enter contact number: ");
             String contactNumber=scanner.nextLine();
 
@@ -81,9 +91,11 @@ public class Hotel_Management {
             e.printStackTrace();
         }
     }
+
     private static void viewReservation(Connection connection, Statement statement) throws SQLException{
         String query="SELECT reservation_id, guest_name, room_number, contact_number, reservation_date FROM reservations";
         ResultSet rs=statement.executeQuery(query);
+
         while (rs.next()){
             int reservationId =rs.getInt("reservation_id");
             String guestName= rs.getString("guest_name");
@@ -91,12 +103,12 @@ public class Hotel_Management {
             String contactNumber = rs.getString("contact_number");
             String reservationDate = rs.getTimestamp("reservation_date").toString();
 
-            System.out.println("Your Reservation ID is: "+reservationId);
-            System.out.println("The Guest Name is: "+guestName);
-            System.out.println("Your room number is: "+roomNumber);
-            System.out.println("Your contact details is: "+contactNumber);
-            System.out.println("The reservation date is: "+reservationDate);
-
+            System.out.println("--------------------------------");
+            System.out.println("Reservation ID: "+reservationId);
+            System.out.println("Guest Name: "+guestName);
+            System.out.println("Room Number: "+roomNumber);
+            System.out.println("Contact: "+contactNumber);
+            System.out.println("Reservation Date: "+reservationDate);
         }
     }
 
@@ -104,15 +116,20 @@ public class Hotel_Management {
         try{
             System.out.println("Enter reservation ID: ");
             int reservationId=scanner.nextInt();
-            System.out.println("Enter guest name: ");
-            String guestName=scanner.next();
+            scanner.nextLine();
 
-            String sql="SELECT room_number FROM reservations"+"WHERE reservation_id = "+ reservationId+"AND guest_name= "+ guestName+"";
+            System.out.println("Enter guest name: ");
+            String guestName=scanner.nextLine();
+
+            String sql="SELECT room_number FROM reservations " +
+                    "WHERE reservation_id = " + reservationId +
+                    " AND guest_name = '" + guestName + "'";
 
             try(ResultSet resultSet = statement.executeQuery(sql)){
                 if(resultSet.next()){
                     int roomNumber = resultSet.getInt("room_number");
-                    System.out.println("Room number for Reservation ID "+ reservationId + " and Guest "+ guestName+ "is: "+roomNumber);
+                    System.out.println("Room number for Reservation ID "+ reservationId +
+                            " and Guest "+ guestName+ " is: "+roomNumber);
                 }
                 else{
                     System.out.println("Reservation not found for the given ID and guest name.");
@@ -122,13 +139,71 @@ public class Hotel_Management {
             e.printStackTrace();
         }
     }
-    private static void updateReservation(Connection connection, Scanner scanner){
+
+    // ✅ COMPLETED
+    private static void updateReservation(Connection connection, Scanner scanner, Statement statement){
         try{
             System.out.println("Enter reservation ID to update: ");
             int reservationId = scanner.nextInt();
             scanner.nextLine();
 
-            if()
+            System.out.println("Enter new guest name: ");
+            String newGuestName = scanner.nextLine();
+
+            System.out.println("Enter new room number: ");
+            int newRoomNumber = scanner.nextInt();
+            scanner.nextLine();
+
+            System.out.println("Enter new contact number: ");
+            String newContactNumber = scanner.nextLine();
+
+            String sql = "UPDATE reservations SET " +
+                    "guest_name = '" + newGuestName + "', " +
+                    "room_number = " + newRoomNumber + ", " +
+                    "contact_number = '" + newContactNumber + "' " +
+                    "WHERE reservation_id = " + reservationId;
+
+            int rowsUpdated = statement.executeUpdate(sql);
+
+            if(rowsUpdated > 0){
+                System.out.println("Reservation updated successfully!");
+            } else {
+                System.out.println("Reservation ID not found. Update failed.");
+            }
+
+        }catch (SQLException e){
+            e.printStackTrace();
         }
+    }
+
+    // ✅ COMPLETED
+    private static void deleteReservation(Connection connection, Scanner scanner, Statement statement){
+        try{
+            System.out.println("Enter reservation ID to delete: ");
+            int reservationId = scanner.nextInt();
+
+            String sql = "DELETE FROM reservations WHERE reservation_id = " + reservationId;
+
+            int rowsDeleted = statement.executeUpdate(sql);
+
+            if(rowsDeleted > 0){
+                System.out.println("Reservation deleted successfully!");
+            } else {
+                System.out.println("Reservation ID not found. Deletion failed.");
+            }
+
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    // ✅ COMPLETED
+    private static void exit() throws InterruptedException {
+        System.out.print("Exiting");
+        for(int i=0;i<3;i++){
+            System.out.print(".");
+            Thread.sleep(500);
+        }
+        System.out.println("\nThank you for using Hotel Management System!");
     }
 }
