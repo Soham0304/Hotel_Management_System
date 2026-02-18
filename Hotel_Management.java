@@ -65,7 +65,7 @@ public class Hotel_Management {
 
     private static void reserveRoom(Connection connection, Scanner scanner, Statement statement){
         try{
-            scanner.nextLine(); // clear buffer
+            scanner.nextLine(); 
 
             System.out.println("Enter guest name: ");
             String guestName=scanner.nextLine();
@@ -140,7 +140,7 @@ public class Hotel_Management {
         }
     }
 
-    // ✅ COMPLETED
+    
     private static void updateReservation(Connection connection, Scanner scanner, Statement statement){
         try{
             System.out.println("Enter reservation ID to update: ");
@@ -176,7 +176,7 @@ public class Hotel_Management {
         }
     }
 
-    // ✅ COMPLETED
+   
     private static void deleteReservation(Connection connection, Scanner scanner, Statement statement){
         try{
             System.out.println("Enter reservation ID to delete: ");
@@ -197,7 +197,7 @@ public class Hotel_Management {
         }
     }
 
-    // ✅ COMPLETED
+   
     private static void exit() throws InterruptedException {
         System.out.print("Exiting");
         for(int i=0;i<3;i++){
@@ -207,3 +207,4 @@ public class Hotel_Management {
         System.out.println("\nThank you for using Hotel Management System!");
     }
 }
+
